@@ -50,6 +50,14 @@ func (c *ConfigCache) Path() string {
 	return c.path
 }
 
+// Init writes initial config to file when the file does not exist. Call this first with config from initialization (e.g. *types.PluginEngine).
+func (c *ConfigCache) Init(initial any) error {
+	if c.Exists() {
+		return nil
+	}
+	return c.Save(initial)
+}
+
 // Load reads the YAML file into dest and keeps a copy in memory. If the file does not exist, dest is unchanged and no error.
 func (c *ConfigCache) Load(dest any) error {
 	c.mu.Lock()
