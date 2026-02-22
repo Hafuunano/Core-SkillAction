@@ -43,14 +43,28 @@ func (s *Store) Get(key string) (value string, found bool, err error) {
 	return row.Value, true, nil
 }
 
-// Set writes to DB then updates memory (fastSync write path).
+// Set writes to DB then updates memory (upsert by key to avoid UNIQUE on key).
 func (s *Store) Set(key, value string) error {
-	row := coredb.Entry{Key: key, Value: value}
-	if err := s.db.Save(&row).Error; err != nil {
-		return err
+	var existing coredb.Entry
+	err := s.db.Unscoped().Where("key = ?", key).First(&existing).Error
+	if err == nil {
+		existing.Value = value
+		existing.DeletedAt = gorm.DeletedAt{}
+		if err := s.db.Save(&existing).Error; err != nil {
+			return err
+		}
+		s.mem.setInMemoryEntry(existing)
+		return nil
 	}
-	s.mem.setInMemoryEntry(row)
-	return nil
+	if err == gorm.ErrRecordNotFound {
+		row := coredb.Entry{Key: key, Value: value}
+		if err := s.db.Save(&row).Error; err != nil {
+			return err
+		}
+		s.mem.setInMemoryEntry(row)
+		return nil
+	}
+	return err
 }
 
 // Delete removes from DB then from memory (hard delete so the same key can be re-inserted).

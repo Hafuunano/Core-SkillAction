@@ -45,10 +45,20 @@ func (s *Store) Get(key string) (value string, found bool, err error) {
 	return row.Value, true, nil
 }
 
-// Set creates or updates an entry in DB only.
+// Set creates or updates an entry in DB only (upsert by key to avoid UNIQUE on key).
 func (s *Store) Set(key, value string) error {
-	row := Entry{Key: key, Value: value}
-	return s.db.Save(&row).Error
+	var existing Entry
+	err := s.db.Unscoped().Where("key = ?", key).First(&existing).Error
+	if err == nil {
+		existing.Value = value
+		existing.DeletedAt = gorm.DeletedAt{}
+		return s.db.Save(&existing).Error
+	}
+	if err == gorm.ErrRecordNotFound {
+		row := Entry{Key: key, Value: value}
+		return s.db.Save(&row).Error
+	}
+	return err
 }
 
 // Delete removes the entry by key in DB only (hard delete so the same key can be re-inserted).
