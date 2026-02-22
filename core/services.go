@@ -2,11 +2,21 @@
 package core
 
 import (
+	"os"
+	"path/filepath"
+	"sync"
 	"time"
 
 	cachedb "github.com/Hafuunano/Core-SkillAction/cache/database"
 	"github.com/Hafuunano/Core-SkillAction/database"
 	"github.com/Hafuunano/Core-SkillAction/timer"
+)
+
+const defaultDBPath = "data/skill_action.db"
+
+var (
+	defaultOnce  sync.Once
+	defaultCache *cachedb.Store
 )
 
 // ServicesOptions configures NewServices. DBPath is required for DB and for DB-backed cache when EnableDBCache is true.
@@ -63,4 +73,23 @@ func NewServices(opts ServicesOptions) (*Services, error) {
 	}
 
 	return s, nil
+}
+
+// DefaultCache returns a lazily-created database-backed cache Store using default path (data/skill_action.db).
+// Plugins that need a store can use this when the host has not called SetStore; the first call creates the DB and cache.
+func DefaultCache() *cachedb.Store {
+	defaultOnce.Do(func() {
+		_ = os.MkdirAll(filepath.Dir(defaultDBPath), 0755)
+		svc, err := NewServices(ServicesOptions{
+			DBPath:         defaultDBPath,
+			EnableDBCache:  true,
+		})
+		if err != nil {
+			return
+		}
+		if svc != nil {
+			defaultCache = svc.Cache
+		}
+	})
+	return defaultCache
 }
