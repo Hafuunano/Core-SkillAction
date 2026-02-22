@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/FloatTech/ttl v0.0.0-20250224045156-012b1463287d // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/glebarez/go-sqlite v1.21.2 // indirect
 	github.com/glebarez/sqlite v1.11.0 // indirect
