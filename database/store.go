@@ -51,9 +51,9 @@ func (s *Store) Set(key, value string) error {
 	return s.db.Save(&row).Error
 }
 
-// Delete removes the entry by key in DB only.
+// Delete removes the entry by key in DB only (hard delete so the same key can be re-inserted).
 func (s *Store) Delete(key string) error {
-	return s.db.Where("key = ?", key).Delete(&Entry{}).Error
+	return s.db.Unscoped().Where("key = ?", key).Delete(&Entry{}).Error
 }
 
 // List returns all entries from DB.

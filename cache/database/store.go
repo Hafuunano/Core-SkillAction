@@ -53,9 +53,9 @@ func (s *Store) Set(key, value string) error {
 	return nil
 }
 
-// Delete removes from DB then from memory.
+// Delete removes from DB then from memory (hard delete so the same key can be re-inserted).
 func (s *Store) Delete(key string) error {
-	result := s.db.Where("key = ?", key).Delete(&coredb.Entry{})
+	result := s.db.Unscoped().Where("key = ?", key).Delete(&coredb.Entry{})
 	if result.Error != nil {
 		return result.Error
 	}
