@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/Hafuunano/Plugin-Collections/lib/database/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -12,7 +12,7 @@ type Store struct {
 
 // OpenDB opens SQLite at dbPath and returns a Store. No tables are created until Migrate is called.
 func OpenDB(dbPath string) (*Store, error) {
-	db, err := sqlite.Open(dbPath)
+	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}

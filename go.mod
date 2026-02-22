@@ -3,16 +3,15 @@ module github.com/Hafuunano/Core-SkillAction
 go 1.25.6
 
 require (
-	github.com/Hafuunano/Plugin-Collections v0.0.0-00010101000000-000000000000
+	github.com/FloatTech/ttl v0.0.0-20250224045156-012b1463287d
+	github.com/glebarez/sqlite v1.11.0
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/gorm v1.25.12
 )
 
 require (
-	github.com/FloatTech/ttl v0.0.0-20250224045156-012b1463287d // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/glebarez/go-sqlite v1.21.2 // indirect
-	github.com/glebarez/sqlite v1.11.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -26,5 +25,3 @@ require (
 	modernc.org/memory v1.8.0 // indirect
 	modernc.org/sqlite v1.23.1 // indirect
 )
-
-replace github.com/Hafuunano/Plugin-Collections => /Users/moyoez/Desktop/Projects-2026/HafuuNano-Project/Lucy-QOnebot/plugins
